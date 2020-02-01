@@ -1,47 +1,85 @@
-# Federated Learning
-
-This is partly the reproduction of the paper of [Communication-Efficient Learning of Deep Networks from Decentralized Data](https://arxiv.org/abs/1602.05629)   
-Only experiments on MNIST and CIFAR10 (both IID and non-IID) is produced by far.
-
-Note: The scripts will be slow without the implementation of parallel computing. 
-
-## Run
-
-The MLP and CNN models are produced by:
-> python [main_nn.py](main_nn.py)
-
-The testing accuracy of MLP on MINST: 92.14% (10 epochs training) with the learning rate of 0.01.
-The testing accuracy of CNN on MINST: 98.37% (10 epochs training) with the learning rate of 0.01.
-
-Federated learning with MLP and CNN is produced by:
-> python [main_fed.py](main_fed.py)
-
-See the arguments in [options.py](optifons.py). 
-
-For example:
-> python main_fed.py --dataset mnist --num_channels 1 --model cnn --epochs 50 --gpu 0 
+# Attack-Resistant Federated Learning with Residual-based Reweighting
 
 
-## Results
-### MNIST
-Results are shown in Table 1 and Table 2, with the parameters C=0.1, B=10, E=5.
+This repository is implemented by [Shuhao Fu](https://github.com/howardmumu) and [Chulin Xie](https://github.com/AlphaPav).
 
-Table 1. results of 10 epochs training with the learning rate of 0.01
-
-| Model     | Acc. of IID | Acc. of Non-IID|
-| -----     | -----       | ----           |
-| FedAVG-MLP|  85.66%     | 72.08%         |
-| FedAVG-CNN|  95.00%     | 74.92%         |
-
-Table 2. results of 50 epochs training with the learning rate of 0.01
-
-| Model     | Acc. of IID | Acc. of Non-IID|
-| -----     | -----       | ----           |
-| FedAVG-MLP| 84.42%      | 88.17%         |
-| FedAVG-CNN| 98.17%      | 89.92%         |
+## Introduction
 
 
-## Requirements
-python 3.6
+This is a PyTorch implementation of our [paper](https://arxiv.org/abs/1912.11464). We present a novel aggregation algorithm with residual-based reweighting to defend federated learning. Our aggregation algorithm combines repeated median regression with the reweighting scheme in iteratively reweighted least squares. Our experiments show that our aggregation algorithm outperforms other alternative algorithms in the presence of label-flipping, backdoor, and Gaussian noise attacks. We also provide theoretical guarantees for our aggregation algorithm.
+  * This repository used code from [federated learning](https://github.com/shaoxiongji/federated-learning).
 
-pytorch 0.3
+## Citing Attack-Resistant Federated Learning
+If you find Attack-Resistant Federated Learning useful in your research, please consider citing:
+```
+@misc{fu2019attackresistant,
+    title={Attack-Resistant Federated Learning with Residual-based Reweighting},
+    author={Shuhao Fu and Chulin Xie and Bo Li and Qifeng Chen},
+    year={2019},
+    eprint={1912.11464},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG}
+}
+```
+
+
+## Main Results
+Our algorithm can successfully defend Gaussian Noise Attacks, Label-Flipping Attacks and Backdoor Attacks. 
+
+| # of attackers  | 0      | 1      | 2      | 3      | 4      | Average |
+|-----------------|--------|--------|--------|--------|--------|---------|
+| FedAvg          | 88.96% | 85.74% | 82.49% | 82.35% | 82.11% | 84.33%  |
+| Median          | 88.11% | 87.69% | 87.15% | 85.85% | 82.01% | 86.16%  |
+| Trimmed Mean    | 88.70% | 88.52% | 87.44% | 85.36% | 82.35% | 86.47%  |
+| Repeated Median | 88.60% | 87.76% | 86.97% | 85.77% | 81.82% | 86.19%  |
+| FoolsGold       | 9.70%  | 9.57%  | 10.72% | 11.42% | 9.98%  | 10.28%  |
+| Ours            | 89.17% | 88.60% | 86.66% | 86.09% | 85.81% | 87.27%  |
+
+*Results of label-flipping attacks on CIFAR-10 dataset with different numbers of attackers.*
+
+
+## Requirements: Software
+
+1. Pytorch from [the offical repository](https://pytorch.org/). 
+
+
+## Preparation for Training & Testing
+
+1. Loan dataset preprocess
+
+Download Lending Club Loan Data dataset from https://www.kaggle.com/wendykan/lending-club-loan-data into the dir `FedAvg/loan`
+
+```
+cd FedAvg/loan
+sh process_loan_data.sh
+```
+
+
+## Usage
+### Label-flipping attack experiments
+
+### Backdoor attack experiments
+
+MNIST naive approach (multiple-shot)
+
+```
+python main_nn.py --epochs 200 --local_bs 64 --num_attackers 1 --attacker_ep 10 --num_users 9 --is_backdoor true
+```
+
+MNIST model replacement (single-shot)
+
+```
+python main_nn.py --epochs 200 --local_bs 64 --num_attackers 1 --attacker_ep 10 --num_users 9 --is_backdoor true --backdoor_scale_factor 10 --backdoor_single_shot_scale_epoch 5
+```
+
+Loan
+
+```
+python main_nn.py --model loannet --dataset loan --epochs 100 --local_bs 64 --num_attackers 1 --local_ep 5 --attacker_ep 10 --num_users 9 --is_backdoor true --backdoor_label 1 --backdoor_per_batch 10 --lr 0.01 
+```
+
+CIFAR-10
+
+```
+python main_nn.py --model resnet --dataset cifar --num_channels 3 --epochs 200 --local_bs 64 --num_attackers 1 --attacker_ep 10 --num_users 9 --is_backdoor true
+```
