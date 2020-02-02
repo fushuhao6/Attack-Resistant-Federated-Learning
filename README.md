@@ -37,16 +37,25 @@ Our algorithm can successfully defend Gaussian Noise Attacks, Label-Flipping Att
 
 *Results of label-flipping attacks on CIFAR-10 dataset with different numbers of attackers.*
 
+![MNIST](images/MNIST.png?raw=true) ![backdoor](images/backdoor.png?raw=true)
+
+*Results of label-flipping attacks on the MNIST dataset (left). Result of backdoor attack success rate
+on CIFAR-10 (right).*
+
 
 ## Requirements: Software
 
-1. Pytorch from [the offical repository](https://pytorch.org/). 
+1. Pytorch from [the offical repository](https://pytorch.org/).
+2. Install tensorboardX.
+```
+pip install tensorboardX
+```
 
 
 ## Preparation for Training & Testing
+1. The code will automatically download MNIST dataset.
 
-1. Loan dataset preprocess
-
+2. Loan dataset preprocess:
 Download Lending Club Loan Data dataset from https://www.kaggle.com/wendykan/lending-club-loan-data into the dir `FedAvg/loan`
 
 ```
@@ -57,6 +66,17 @@ sh process_loan_data.sh
 
 ## Usage
 ### Label-flipping attack experiments
+Label Flipping attack on MNIST
+```
+python main_nn.py --model smallcnn --epochs 200 --gpu 0 --iid 0 --fix_total --frac 0.1 --num_attackers 4 --attacker_ep 10 --num_users 100 --attack_label 1 --agg irls
+```
+
+Label Flipping attack on CIFAR-10
+```
+python main_nn.py --model resnet --dataset cifar --epochs 100 --gpu 0 --iid 0 --local_bs 64 --num_users 6 --num_attackers 4 --attacker_ep 10 --attack_label 3 --irls
+```
+
+Change `--agg` tag to select aggregation algorithm and change `--num_attackers` to specify the number of attackers. Note that in CIFAR experiments the `--num_users` + `--num_attackers` should equal 10.
 
 ### Backdoor attack experiments
 

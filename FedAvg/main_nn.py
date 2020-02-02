@@ -119,7 +119,7 @@ if __name__ == '__main__':
     accs = []
     reweights = []
     backdoor_accs = []
-    if args.irls:
+    if 'irls' in args.agg:
         model_save_path = '../weights/{}_{}_irls_{}_{}_{}'.format(args.dataset, args.model, args.Lambda, args.thresh, args.iid)
     else:
         model_save_path = '../weights/{}_{}'.format(args.dataset, args.model)
@@ -164,7 +164,7 @@ if __name__ == '__main__':
                                         attack_label=args.attack_label)
 
                 temp_net = copy.deepcopy(net_glob)
-                if args.fg:
+                if args.agg == 'fg':
                     w, loss, _poisoned_net = local.update_gradients(net=temp_net)
                 else:
                     w, loss, _poisoned_net = local.update_weights(net=temp_net)
@@ -179,7 +179,7 @@ if __name__ == '__main__':
             else:
                 local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx], tb=summary)
                 temp_net = copy.deepcopy(net_glob)
-                if args.fg:
+                if args.agg == 'fg':
                     w, loss, _updated_net = local.update_gradients(net=temp_net)
                 else:
                     w, loss, _updated_net = local.update_weights(net=temp_net)
@@ -187,15 +187,16 @@ if __name__ == '__main__':
             w_locals.append(copy.deepcopy(w))
             loss_locals.append(copy.deepcopy(loss))
 
+        # remove model with inf values
         w_locals, invalid_model_idx= get_valid_models(w_locals)
 
         if len(w_locals) == 0:
             continue
 
-        aggregate_weights(args, w_locals, net_glob, reweights, fg)
+        w_glob = aggregate_weights(args, w_locals, net_glob, reweights, fg)
 
         # copy weight to net_glob
-        if not args.fg:
+        if not args.agg == 'fg':
             net_glob.load_state_dict(w_glob)
 
         # test data

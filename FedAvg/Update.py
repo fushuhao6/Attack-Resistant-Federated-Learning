@@ -96,8 +96,6 @@ class LocalUpdate(object):
                              shuffle=True)
             test = DataLoader(DatasetSplit(dataset, idxs_test, self.attack_label), batch_size=int(len(idxs_test) / 10),
                               shuffle=True)
-        if self.args.learn:
-            val = idxs_val
         return train, val, test
 
     def update_weights(self, net):

@@ -210,7 +210,7 @@ def loan_sample_by_state(loanHelper,num_users):
     for i in range(num_users):
         idxs= loanHelper.dict_by_states[keys[i]]
         dict_users[i]=np.array(idxs)
-        print(f'assigned {len(idxs)} data in addr_state {keys[i]} to user {i}')
+        print('assigned {len(idxs)} data in addr_state {keys[i]} to user {i}')
     return dict_users
 
 
