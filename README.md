@@ -15,9 +15,8 @@ If you find Attack-Resistant Federated Learning useful in your research, please 
 @article{fu2019attackresistant,
     title={Attack-Resistant Federated Learning with Residual-based Reweighting},
     author={Shuhao Fu and Chulin Xie and Bo Li and Qifeng Chen},
-    year={2019},
-    eprint={1912.11464},
-    archivePrefix={arXiv}
+    journal={arXiv:1912.11464},
+    year={2019}
 }
 ```
 
