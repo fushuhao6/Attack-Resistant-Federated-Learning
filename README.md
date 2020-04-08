@@ -12,13 +12,12 @@ This is a PyTorch implementation of our [paper](https://arxiv.org/abs/1912.11464
 ## Citing Attack-Resistant Federated Learning
 If you find Attack-Resistant Federated Learning useful in your research, please consider citing:
 ```
-@misc{fu2019attackresistant,
+@article{fu2019attackresistant,
     title={Attack-Resistant Federated Learning with Residual-based Reweighting},
     author={Shuhao Fu and Chulin Xie and Bo Li and Qifeng Chen},
     year={2019},
     eprint={1912.11464},
-    archivePrefix={arXiv},
-    primaryClass={cs.LG}
+    archivePrefix={arXiv}
 }
 ```
 
